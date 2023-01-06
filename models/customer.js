@@ -32,7 +32,7 @@ class Customer {
   }
 
   /** get a customer by ID. */
-
+  // TODO: REMINDER: WHY ARE WE GOING TO SNAKE CASED HERE?
   static async get(id) {
     const results = await db.query(
           `SELECT id,

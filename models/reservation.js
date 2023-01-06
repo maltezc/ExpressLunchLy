@@ -27,19 +27,42 @@ class Reservation {
 
   static async getReservationsForCustomer(customerId) {
     const results = await db.query(
-          `SELECT id,
+      `SELECT id,
                   customer_id AS "customerId",
                   num_guests AS "numGuests",
                   start_at AS "startAt",
                   notes AS "notes"
            FROM reservations
            WHERE customer_id = $1`,
-        [customerId],
+      [customerId]
     );
 
-    return results.rows.map(row => new Reservation(row));
+    return results.rows.map((row) => new Reservation(row));
+  }
+
+  /* Part 4 */
+  /* Save function for reservations */
+  async save() {
+    if (this.id === undefined) {
+      const result = await db.query(
+        `INSERT INTO reservations (customer_id, num_guests, start_at, notes)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id`,
+        [this.customerId, this.numGuests, this.startAt, this.notes]
+      );
+      this.id = result.rows[0].id;
+    } else {
+      await db.query(
+        `UPDATE reservations
+             SET customer_id=$1,
+                num_guests=$2,
+                start_at=$3,
+                notes=$4
+             WHERE id = $5`,
+        [this.firstName, this.lastName, this.phone, this.notes, this.id]
+      );
+    }
   }
 }
-
 
 module.exports = Reservation;
