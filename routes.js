@@ -20,17 +20,19 @@ router.get("/", async function (req, res, next) {
 /* Part 6 */
 /* Searches for a customer */
 router.get("/search/", async function(req, res, next) {
-  if (req.body === undefined) {
+  // todo: should check for empty search term
+  /* if (req.body === undefined) {
     throw new BadRequestError();
-  };
+  }; */
 
-  const nameToSearch = req.query.name;
+  const nameToSearch = req.query.search;
 
   // pass name to db to search
-  const foundNames = await Customer.searchName(nameToSearch)
+  const customers = await Customer.searchName(nameToSearch)
 
+  // debugger;
   // show list to users that might match
-  return res.render("customer_list.html", { foundNames });
+  return res.render("customer_search_results.html", { customers });
 
 });
 

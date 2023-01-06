@@ -92,27 +92,35 @@ class Customer {
     return `${this.firstName} ${this.lastName}`;
   }
 
+  /* PART 6 */
+  /* Serach function - Class function */
+
   static async searchName(name) {
+
     const results = await db.query(
       `SELECT id,
-              first_name AS "firstName",
-              last_name  AS "lastName",
-              phone,
-              notes
-       FROM customers
-       WHERE first_name LIKE $1
-       ORDER BY last_name, first_name`,
-      [name]
-    );
-    const customer = results.rows[0];
+          first_name AS "firstName",
+          last_name  AS "lastName",
+          phone,
+          notes
+      FROM customers
+      WHERE first_name ILIKE $1 OR last_name ILIKE $1
 
-    if (customer === undefined) {
-      const err = new Error(`No such customer: ${id}`);
+      ORDER BY last_name, first_name`,
+      [`%${name}%`]
+    );
+    // TODO: THIS DIDNT WORK: OR first_name ILIKE $1 AND last_name ILIKE $1
+    // if I type in full name like 'jessica abbot' it returns empty,
+    // but typing in a firstname or a last name works.
+    const customers = results.rows;
+
+    if (customers === undefined) {
+      const err = new Error(`No such customer: ${name}`);
       err.status = 404;
       throw err;
     }
-
-    return new Customer(customer);
+    // debugger;
+    return results.rows.map((c) => new Customer(c));
   }
 }
 
