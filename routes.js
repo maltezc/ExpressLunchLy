@@ -17,6 +17,24 @@ router.get("/", async function (req, res, next) {
   return res.render("customer_list.html", { customers });
 });
 
+/* Part 6 */
+/* Searches for a customer */
+router.get("/search/", async function(req, res, next) {
+  if (req.body === undefined) {
+    throw new BadRequestError();
+  };
+
+  const nameToSearch = req.query.name;
+
+  // pass name to db to search
+  const foundNames = await Customer.searchName(nameToSearch)
+
+  // show list to users that might match
+  return res.render("customer_list.html", { foundNames });
+
+});
+
+
 /** Form to add a new customer. */
 
 router.get("/add/", async function (req, res, next) {
@@ -91,5 +109,11 @@ router.post("/:id/add-reservation/", async function (req, res, next) {
 
   return res.redirect(`/${customerId}/`);
 });
+
+
+
+
+
+
 
 module.exports = router;
