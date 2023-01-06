@@ -96,7 +96,6 @@ class Customer {
   /* Serach function - Class function */
 
   static async searchName(name) {
-
     const results = await db.query(
       `SELECT id,
           first_name AS "firstName",
@@ -119,8 +118,48 @@ class Customer {
       err.status = 404;
       throw err;
     }
-    // debugger;
+
     return results.rows.map((c) => new Customer(c));
+  }
+
+  /* Part 7 */
+  /* Returns top 10 customers */
+
+  static async topCustomers() {
+    let top10Results = [];
+    // get all reservations, order by or group by user
+    const reservationResults = await db.query(
+      `SELECT
+      customer_id AS "customerId",
+      COUNT(*)
+      FROM reservations
+      GROUP BY customer_id
+      ORDER BY COUNT(*) DESC
+      LIMIT 10`
+    );
+
+    // query for each user
+    for (const reservation in reservationResults.rows) {
+      const customer = reservationResults.rows[reservation]
+      const customerId = customer.customerId; // extract customer id
+
+      const userResults = await db.query(
+        `SELECT id,
+            first_name AS "firstName",
+            last_name  AS "lastName",
+            phone,
+            notes
+        FROM customers
+        WHERE id = $1
+        ORDER BY last_name, first_name`,
+        [customerId]
+      );
+      top10Results.push(userResults.rows[0]);
+    }
+    // get those users
+    const results = top10Results
+
+    return results.map((c) => new Customer(c));
   }
 }
 
