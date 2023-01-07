@@ -40,7 +40,7 @@ class Reservation {
     return results.rows.map((row) => new Reservation(row));
   }
 
-  /* Part 4 */
+  /* Part 5 */
   /* Save function for reservations */
   async save() {
     if (this.id === undefined) {
@@ -52,7 +52,7 @@ class Reservation {
       );
       this.id = result.rows[0].id;
     } else {
-      await db.query(
+      await db.query( // TODO: FIX THIS <-- RE ORDER $ SIGN
         `UPDATE reservations
              SET customer_id=$1,
                 num_guests=$2,

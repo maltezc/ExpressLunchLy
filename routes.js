@@ -19,14 +19,15 @@ router.get("/", async function (req, res, next) {
 
 /* Part 6 */
 /* Searches for a customer */
-router.get("/search/", async function(req, res, next) {
+// TODO: REFACTOR TO HAVE ROOT ROUTE HANDLE THIS SEARCH
+router.get("/", async function(req, res, next) {
   const nameToSearch = req.query.search;
-
+  debugger
   // pass name to db to search
   const customers = await Customer.searchName(nameToSearch)
 
   // show list to users that might match
-  return res.render("customer_search_results.html", { customers });
+  return res.render("customer_list.html", { customers });
 });
 
 /* Part 7 */
@@ -38,6 +39,7 @@ router.get("/top-ten/", async function(req, res, next) {
   const customers = await Customer.topCustomers()
 
   // show list to users that might match
+  // TODO: USE typical list html template
   return res.render("customer_search_results.html", { customers });
 });
 

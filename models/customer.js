@@ -104,15 +104,17 @@ class Customer {
           notes
       FROM customers
       WHERE first_name ILIKE $1 OR last_name ILIKE $1
-
+      OR first_name ILIKE $1 AND last_name ILIKE $1
       ORDER BY last_name, first_name`,
       [`%${name}%`]
     );
+    // TODO: LOOK INTO CONCAT <-- concat first and last and then search
+    // first last ILIKE $1
     // TODO: THIS DIDNT WORK: OR first_name ILIKE $1 AND last_name ILIKE $1
     // if I type in full name like 'jessica abbot' it returns empty,
     // but typing in a firstname or a last name works.
     const customers = results.rows;
-
+    debugger;
     if (customers === undefined) {
       const err = new Error(`No such customer: ${name}`);
       err.status = 404;
@@ -140,7 +142,7 @@ class Customer {
 
     // query for each user
     for (const reservation in reservationResults.rows) {
-      const customer = reservationResults.rows[reservation]
+      const customer = reservationResults.rows[reservation];
       const customerId = customer.customerId; // extract customer id
 
       const userResults = await db.query(
@@ -157,9 +159,13 @@ class Customer {
       top10Results.push(userResults.rows[0]);
     }
     // get those users
-    const results = top10Results
+    const results = top10Results;
 
     return results.map((c) => new Customer(c));
+    // TODO: LOOK AT USING JOIN TO ONLY USE 1 QUERY
+    // if i have to use javascript to use N operations, instead do it int the database query.
+    // operation above hits database 10 times. (EXPENSIVE)
+    // hit it ones
   }
 }
 
